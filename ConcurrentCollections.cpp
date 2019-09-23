@@ -1,48 +1,102 @@
 #include "ConcurrentCollections.hpp"
 
-ConcurrentDictionary::ConcurrentDictionary()
-{
-    std::cpit << "Hello..." ;
-
-
-}
-
-ConcurrentDictionary::~ConcurrentDictionary<TKey,TValue>()
+namespace Collections
 {
 
+template <typename TKey, typename TValue>
+ConcurrentDictionary<TKey, TValue>::ConcurrentDictionary()
+{
+    std::cout << "ConcurrentDictionary Constructor Called" << std::endl;
 }
 
-int ConcurrentDictionary::Count()
+// template <typename TKey, typename TValue>
+// ConcurrentDictionary<TKey, TValue>::~ConcurrentDictionary<TKey, TValue>()
+// {
+//     std::cout << "ConcurrentDictionary Destructor Called" << std::endl;
+// }
+
+template <typename TKey, typename TValue>
+bool ConcurrentDictionary<TKey, TValue>::PrintDictionary()
 {
-    return 0 ;
+    std::cout << "Hellyeah!\n";
+    return true;
 }
 
-template<class TKey, class TValue>
-bool ConcurrentDictionary::TryAdd(TKey, TValue&)
+template <typename TKey, typename TValue>
+long const ConcurrentDictionary<TKey, TValue>::size()
 {
-    return false ;
+    std::lock_guard m(this->mutex);
+    return std::map<TKey, TValue>::size();
 }
 
-template<class TKey, class TValue>
-bool ConcurrentDictionary::TryRemove(TKey, TValue&)
+template <typename TKey, typename TValue>
+TValue &ConcurrentDictionary<TKey, TValue>::operator[](const TKey &key)
 {
-    return false ;
+    std::lock_guard m(this->mutex);
+    return std::map<TKey, TValue>::operator[](key);
 }
 
-template<class TKey, class TValue>
-bool ConcurrentDictionary::TryRemove(TKey)
+template <typename TKey, typename TValue>
+TValue &ConcurrentDictionary<TKey, TValue>::operator[](TKey &&key)
 {
-    return false ;
+    std::lock_guard m(this->mutex);
+    return std::map<TKey, TValue>::operator[](key);
 }
 
-template<class TKey, class TValue>
-bool ConcurrentDictionary::TryGet(TKey, TValue&)
+template <typename TKey, typename TValue>
+bool ConcurrentDictionary<TKey, TValue>::TryAdd(TKey k, const TValue &v)
 {
-    return false ;
+    auto p = std::pair<TKey, TValue>(k, v);
+    std::lock_guard m(this->mutex);
+    return this->insert(p).second;
 }
 
-template<class TKey, class TValue>
-bool ConcurrentDictionary::AddOrUpdate(TKey, TValue&)
+template <typename TKey, typename TValue>
+bool ConcurrentDictionary<TKey, TValue>::TryRemove(TKey k, TValue &v)
 {
-    return false ;
+    std::lock_guard m(this->mutex);
+    auto it = this->find(k);
+    if (it != this->end())
+    {
+        v = it->second;
+        return this->erase(it) > 0;
+    }
+
+   
+    return false;
 }
+
+template <typename TKey, typename TValue>
+bool ConcurrentDictionary<TKey, TValue>::TryRemove(TKey k)
+{
+    std::lock_guard m(this->mutex);
+    auto it = this->find(k);
+    if (it != this->end())
+    {
+        this->erase(it);
+    }
+
+    return false;
+}
+
+template <typename TKey, typename TValue>
+bool ConcurrentDictionary<TKey, TValue>::TryGet(TKey k, TValue &v)
+{
+    std::lock_guard m(this->mutex);
+    auto it = this->find(k);
+    if (it != this->end())
+    {
+        v = it->second;
+    }
+
+    return false;
+}
+
+template <typename TKey, typename TValue>
+bool ConcurrentDictionary<TKey, TValue>::AddOrUpdate(TKey, TValue &)
+{
+    std::lock_guard m(this->mutex);
+    return false;
+}
+
+} // namespace Collections
