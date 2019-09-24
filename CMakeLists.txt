@@ -8,7 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 #################################################################
-# find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 set(CONCURRENT_COLLECTIONS_SOURCES ${PROJECT_SOURCE_DIR}/ConcurrentCollections/ConcurrentCollections.cpp)
 include_directories("${PROJECT_SOURCE_DIR}/ConcurrentCollections/include")
 add_library(ConcurrentCollections SHARED ${CONCURRENT_COLLECTIONS_SOURCES})

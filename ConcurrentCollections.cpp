@@ -9,12 +9,6 @@ ConcurrentDictionary<TKey, TValue>::ConcurrentDictionary()
     std::cout << "ConcurrentDictionary Constructor Called" << std::endl;
 }
 
-// template <typename TKey, typename TValue>
-// ConcurrentDictionary<TKey, TValue>::~ConcurrentDictionary<TKey, TValue>()
-// {
-//     std::cout << "ConcurrentDictionary Destructor Called" << std::endl;
-// }
-
 template <typename TKey, typename TValue>
 bool ConcurrentDictionary<TKey, TValue>::PrintDictionary()
 {
@@ -59,10 +53,9 @@ bool ConcurrentDictionary<TKey, TValue>::TryRemove(TKey k, TValue &v)
     if (it != this->end())
     {
         v = it->second;
-        return this->erase(it) > 0;
-    }
-
-   
+        this->erase(it);
+        return true;
+    }   
     return false;
 }
 
